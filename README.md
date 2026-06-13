@@ -132,6 +132,8 @@ Si dos objetos tienen propiedades similares y compiten por el mismo espacio, pod
 **El determinismo.**
 Un motor de física en tiempo real puede producir resultados ligeramente distintos dependiendo del dispositivo o la tasa de refresco. Para que ReForm sea útil, el layout debe ser reproducible: mismos inputs, mismo output. La solución propuesta es usar un paso de simulación fijo, pero queda por demostrar que funciona en la práctica.
 
+---
+
 ## Pensamientos
 
 No sé si esto es el camino correcto.
@@ -147,6 +149,8 @@ Pero otras veces pienso... ¿y si no fuese así? ¿Y si el layout pudiera ser m�
 Tal vez solo estoy divagando mucho.
 
 No tengo las respuestas. Solo tengo la incomodidad de las preguntas y un canvas en blanco.
+
+---
 
 ## Stack
 
