@@ -173,5 +173,19 @@ Cuando la hipótesis esté demostrada, el núcleo migra a Rust para rendimiento 
 *Las entradas se ordenan de la más reciente a la más antigua. El proceso es el producto (creo que eso es liberador).*
 
 ---
+## 2026-06-13 — El problema de rendimiento como pista arquitectónica
 
-*Por el momento no hay entradas, la investigación comienza aquí.*
+Mientras pensaba en optimización y que los dispositivos no exploten intentando hacer cálculos, me di cuenta de algo que no esperaba.
+
+El problema de O(n²), tener que calcular interacciones entre todos los objetos simultáneamente no es solo un problema de rendimiento. Es una señal de que el motor no debería operar globalmente sobre todos los objetos a la vez.
+
+Y eso me dio una pista sobre la arquitectura correcta y es que sí: **necesitas niveles**.
+
+- **Nivel micro** — física local dentro de un dominio. Pocos objetos, O(n²) manejable.
+- **Nivel macro** — dominios que negocian entre sí. También pocos, también manejable.
+
+Nunca calculas todo contra todo globalmente. La jerarquía no es solo una decisión de diseño, es la solución natural al problema de rendimiento.
+
+O bueno... por ahora lo veo así.
+
+---
