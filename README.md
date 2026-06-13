@@ -4,21 +4,23 @@
 
 ---
 
-## El problema
+## Manifiesto
 
-CSS obliga al desarrollador a **predecir** cómo se verá una interfaz en cada tamaño de pantalla. Tú escribes las reglas. Tú imaginas los casos. Tú resuelves los conflictos cuando algo se rompe.
+Llevamos décadas construyendo interfaces con la misma metáfora: cajas dentro de cajas, reglas sobre reglas. CSS no está roto, hace exactamente lo que fue diseñado para hacer. El problema es que fue diseñado para un mundo donde las pantallas no cambiaban de tamaño.
 
-Es un sistema frágil porque su modelo mental es el de **cajas con reglas fijas**. Alteras un elemento y desalineas tres componentes abajo. Agregas un breakpoint y introduces un conflicto nuevo. El sistema no sabe **ceder**, solo sabe **obedecer**, y cuando dos reglas se contradicen, falla.
+Hoy el desarrollador tiene que imaginar cada contexto, escribir cada caso, y rezar para que nada colisione. Es un trabajo de predicción disfrazado de diseño.
 
-No es un problema de sintaxis, es más bien un problema de arquitectura.
+Es un sistema frágil porque su modelo mental es el de **cajas con reglas fijas**. Alteras un elemento y desalineas tres componentes abajo. Agregas un breakpoint y introduces un conflicto nuevo. El sistema no sabe **ceder**, solo sabe **obedecer**, y cuando dos reglas se contradicen, falla. No es un problema de sintaxis, es más bien un problema de arquitectura.
+
+Mientras pensaba en una solución, me vino a la mente la naturaleza. El agua no tiene `width`, `height` ni `flex` y sin embargo siempre encuentra la forma de ocupar el espacio disponible. ¿Existe alguna fuerza natural que explique cómo acomodar objetos dentro de un contenedor?
+
+Empecé investigando mecánica de fluidos y terminé en otro lugar: soft body physics. A veces investigas una cosa y encuentras otra. (Aunque a veces me pregunto si esto no será una aberración innecesaria.)
 
 ---
 
 ## La hipótesis
 
 > *Los sistemas de layout basados en reglas fallan en pantallas variables porque modelan el espacio como un problema de lógica. Un sistema basado en física modela el espacio como un problema de energía y los problemas de energía siempre tienen solución (o eso parece).*
-
-La naturaleza no arroja errores. Cuando dos objetos físicos colisionan en un espacio reducido, no hay conflicto, hay negociación. El sistema encuentra equilibrio, siempre.
 
 ReForm investiga si ese principio puede aplicarse al layout de interfaces.
 
@@ -86,7 +88,7 @@ Intentó traer constraints a la web reemplazando el motor de layout del navegado
 
 ## Inspiración directa
 
-**[Pretext — Cheng Lou](https://github.com/primitive-ui/pretext)**
+**[Pretext — Cheng Lou](https://github.com/chenglou/pretext)**
 
 La idea nació viendo un video de **Midudev** donde presentaba el trabajo de Cheng Lou con Pretext. Pretext resuelve el layout de texto sin tocar el DOM y me quedé pensando: ¿por qué nadie ha hecho lo mismo para los objetos en el espacio? De ahí nació la idea de ReForm. (Aunque honestamente de solo investigar ya vi por que.)
 
