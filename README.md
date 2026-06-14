@@ -173,6 +173,31 @@ Cuando la hipótesis esté demostrada, el núcleo migra a Rust para rendimiento 
 *Las entradas se ordenan de la más reciente a la más antigua. El proceso es el producto (creo que eso es liberador).*
 
 ---
+
+## 2026-06-14 — La física no basta
+
+Hoy corrí el prototipo por primera vez. Tres cuerpos: sidebar, content, card.
+
+Esperaba que negociaran espacio según su masa y rigidez. Que el más rígido defendiera su tamaño, que el más flexible cediera, que encontraran equilibrio sin romperse.
+
+Lo que vi:
+
+- Los objetos se solapan cuando el espacio falta.
+- Se traspasan cuando intentan expandirse.
+- Subir magnetismo e iteraciones ayuda, pero no resuelve el problema de fondo.
+
+La pista:
+
+Las propiedades físicas no bastan para expresar intención de diseño. Un sidebar no es solo un objeto rígido: es un objeto que **no debe moverse ni deformarse bajo ninguna circunstancia**. Los demás deben fluir a su alrededor. La masa y la rigidez no alcanzan para decir eso.
+
+Nueva hipótesis dentro de la hipótesis:
+
+Quizás necesito dos tipos de objetos: estructurales (no ceden, son paredes internas) y flotantes (negocian entre sí en el espacio restante). Quizás el layout no es solo física: es física con restricciones de orden.
+
+Probare añadir un flag `isStructural` a `Body` y modificar el `Solver` para respetarlo. Si funciona, el motor empezará a producir layouts reconocibles. Si no, aprenderé algo más.
+
+![](./src/assets/demo.gif)
+---
 ## 2026-06-13 — El problema de rendimiento como pista arquitectónica
 
 Mientras pensaba en optimización y que los dispositivos no exploten intentando hacer cálculos, me di cuenta de algo que no esperaba.
