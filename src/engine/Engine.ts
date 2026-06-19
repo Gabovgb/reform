@@ -5,12 +5,14 @@ export class Engine {
     bodies: Body[] = [];
     containerWidth: number;
     containerHeight: number;
+    contentHeight: number;
     private options: Required<EngineOptions>;
     private stepAccumulator = 0;
 
     constructor(width: number, height: number, options: EngineOptions = {}) {
         this.containerWidth = width;
         this.containerHeight = height;
+        this.contentHeight = height;
         this.options = {
         constraintIterations: options.constraintIterations ?? 5,
         repulsionIterations: options.repulsionIterations ?? 3,
@@ -48,10 +50,14 @@ export class Engine {
         for (const body of this.bodies) {
         Solver.restoreSize(body);
         }
+
         // Paredes del contenedor
         if (this.options.enableWalls) {
         this.applyContainerConstraints();
         }
+
+        this.recalculateContentHeight();
+
         // Guardar estado anterior para Verlet
         for (const body of this.bodies) {
         body.storePrevious();
@@ -84,10 +90,25 @@ export class Engine {
             body.y = margin;
         }
         if (body.y + body.height > maxY) {
+            if (body.height <= body.minHeight) {
+            this.contentHeight = Math.max(this.contentHeight, body.y + body.height + margin);
+            } else {
             body.applyForce(0, (maxY - (body.y + body.height)) * 2);
             body.y = maxY - body.height;
+            }
         }
         }
+    }
+
+    private recalculateContentHeight(): void {
+        const margin = this.options.margin;
+        let maxBottom = this.containerHeight;
+
+        for (const body of this.bodies) {
+        maxBottom = Math.max(maxBottom, body.y + body.height + margin);
+        }
+
+        this.contentHeight = Math.max(this.contentHeight, maxBottom);
     }
 
     getState(): EngineState {
@@ -95,6 +116,7 @@ export class Engine {
         bodies: this.bodies,
         containerWidth: this.containerWidth,
         containerHeight: this.containerHeight,
+        contentHeight: this.contentHeight,
         margin: this.options.margin,
         };
     }

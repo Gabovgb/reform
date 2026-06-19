@@ -71,6 +71,7 @@ export interface EngineState {
     bodies: Body[];
     containerWidth: number;
     containerHeight: number;
+    contentHeight: number;
     margin: number;
 }
 

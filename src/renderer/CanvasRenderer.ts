@@ -44,7 +44,7 @@ export class CanvasRenderer {
 
     /** Dibuja el estado completo del motor */
     drawState(state: EngineState): void {
-        this.clear(state.containerWidth, state.containerHeight);
+        this.clear(state.containerWidth, state.contentHeight);
         for (const body of state.bodies) {
         this.drawBody(body);
         }

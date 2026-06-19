@@ -84,7 +84,13 @@ export class Solver {
         body.width = Math.max(newWidth, body.minWidth);
         } else {
         const newHeight = body.height - deformationAmount;
-        body.height = Math.max(newHeight, body.minHeight);
+        if (newHeight < body.minHeight) {
+            const overflow = body.minHeight - newHeight;
+            body.height = body.minHeight;
+            body.y += overflow;
+        } else {
+            body.height = newHeight;
+        }
         }
     }
 

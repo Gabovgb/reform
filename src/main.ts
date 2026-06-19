@@ -58,7 +58,14 @@ function loop(currentTime: number): void {
     const clampedDelta = Math.min(realDeltaTime, 0.1);
 
     engine.update(clampedDelta);
-    renderer.drawState(engine.getState());
+    const state = engine.getState();
+    if (canvas.width !== state.containerWidth) {
+        canvas.width = state.containerWidth;
+    }
+    if (canvas.height !== state.contentHeight) {
+        canvas.height = state.contentHeight;
+    }
+    renderer.drawState(state);
 
     requestAnimationFrame(loop);
 }
@@ -68,6 +75,5 @@ requestAnimationFrame(loop);
 // 5. Redimensionar al cambiar el viewport
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
     engine.resize(canvas.width, canvas.height);
 });

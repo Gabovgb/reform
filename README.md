@@ -173,7 +173,17 @@ Cuando la hipótesis esté demostrada, el núcleo migra a Rust para rendimiento 
 *Las entradas se ordenan de la más reciente a la más antigua. El proceso es el producto (creo que eso es liberador).*
 
 ---
+## 2026-06-19 — Scroll funcional
 
+Hace un tiempo pensé que para resolver el solapamiento primero tenía que hacer que los objetos se muevan hacia abajo cuando no hay espacio suficiente.
+
+Ahora el scroll ya se activa correctamente al achicar el viewport. Los cuerpos que alcanzan su altura mínima son empujados fuera del viewport y el canvas se expande para mostrar scroll real.
+
+El problema es que sigue habiendo algo de solapamiento residual. Todavía no sé de dónde viene exactamente, puede ser el orden de las iteraciones, puede ser que el clamp de la pared inferior y el empuje hacia abajo compiten entre sí en algún punto. Hay que investigarlo.
+
+![](./src/assets/demo2.gif)
+
+---
 ## 2026-06-14 — La física no basta
 
 Hoy corrí el prototipo por primera vez. Tres cuerpos: sidebar, content, card.
