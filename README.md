@@ -173,6 +173,38 @@ Cuando la hipótesis esté demostrada, el núcleo migra a Rust para rendimiento 
 *Las entradas se ordenan de la más reciente a la más antigua. El proceso es el producto (creo que eso es liberador).*
 
 ---
+## 2026-06-19 — Stiffness, mass, y aprender a leer el comportamiento del motor
+
+Pasé buena parte del día persiguiendo algo que pensé que era un bug y terminó siendo una mezcla de confusión conceptual y valores mal escalados.
+
+**Lo que vi primero:**
+
+| Propiedad alta | Comportamiento observado |
+|-----------------|---------------------------|
+| `mass` alta | Defiende su posición — cuesta moverlo. |
+| `stiffness` alta (0.9) | Se queda en su lugar, pero se deja aplastar y queda solapado debajo de otros objetos. Casi como hule. |
+| `stiffness` baja (0.1) | No se deja aplastar fácil, pero sí es fácil moverlo. |
+
+Esto parecía contradecir el nombre de la propiedad, "rigidez alta" debería significar que resiste deformarse, no que se deja aplastar. Sospeché del Solver, cambié fórmulas, las revertí.
+
+También probé subir las iteraciones del solver (`repulsionIterations`, `constraintIterations` a 18-20). El solapamiento residual bajó, pero no es una solución real, solo le da al sistema más oportunidades de converger asintóticamente, a un costo de rendimiento que ya había anticipado en la entrada del O(n²). Lo dejo de lado por ahora.
+
+**Lo que realmente pasaba:**
+
+Tenía `mass` en 2, 3 y 1 para los tres objetos, valores demasiado parecidos entre sí. La diferencia relativa de `invMass` (lo que realmente determina cuánto se mueve un cuerpo en `applyForce`) era casi nula, así que el efecto de la masa no se notaba y todo el comportamiento raro parecía venir de `stiffness`.
+
+Subí las masas a 20, 30 y 10. El solapamiento se redujo notablemente sin tocar una sola línea de código.
+
+**El aprendizaje real del día:**
+
+`stiffness` y `mass` son dos propiedades independientes, una decide cuánto cedes en forma, la otra cuánto cedes en posición. Pero además, son sensibles a la escala: con valores muy cercanos entre objetos, el motor no logra expresar diferencias de comportamiento claras. No basta con que las propiedades existan, los rangos numéricos también importan.
+
+No fue un bug como tal, sino una mezcla de no entender bien el modelo y no darle a las propiedades suficiente rango para expresarse.
+
+**Pendiente:** Sigo sin estar seguro de si hay algo invertido en el Solver o si todo el comportamiento extraño se explicaba solo por la escala. Habrá que probar con masas similares otra vez, ahora con más cuidado, para confirmar.
+![](./src/assets/demo3.gif)
+
+---
 ## 2026-06-19 — Scroll funcional
 
 Hace un tiempo pensé que para resolver el solapamiento primero tenía que hacer que los objetos se muevan hacia abajo cuando no hay espacio suficiente.
