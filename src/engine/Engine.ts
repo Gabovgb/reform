@@ -94,55 +94,77 @@ export class Engine {
         const maxY = this.containerHeight - margin;
 
         for (const body of this.bodies) {
-            // Pared derecha
+            // La proporción de cómo reacciona este cuerpo específico
+            const deformRatio = 1 - body.stiffness;
+            const moveRatio = body.stiffness;
+
+            // --- Pared Derecha ---
             if (body.x + body.width > maxX) {
-                const overflowX = (body.x + body.width) - maxX;
-                if (body.width > body.minWidth) {
-                    const originalWidth = body.width;
-                    body.width = Math.max(body.minWidth, body.width - overflowX);
-                    const remaining = overflowX - (originalWidth - body.width);
-                    if (remaining > 0) body.x -= remaining;
+                const overlap = (body.x + body.width) - maxX;
+
+                // 1. Intentamos deformar según su flexibilidad
+                const targetWidth = body.width - (overlap * deformRatio);
+
+                if (targetWidth < body.minWidth) {
+                    // Si llega al hueso, la deformación que no pudo absorber se vuelve movimiento
+                    const overflow = body.minWidth - targetWidth;
+                    body.width = body.minWidth;
+                    body.applyForce(-(overlap * moveRatio + overflow), 0);
                 } else {
-                    body.applyForce((maxX - (body.x + body.width)) * 2, 0);
-                    body.x = maxX - body.width;
+                    body.width = targetWidth;
+                    body.applyForce(-(overlap * moveRatio), 0);
                 }
             }
 
-            // Pared izquierda
+            // --- Pared Izquierda ---
             if (body.x < margin) {
-                const overflowLeft = margin - body.x;
-                if (body.width > body.minWidth) {
-                    const originalWidth = body.width;
-                    body.width = Math.max(body.minWidth, body.width - overflowLeft);
-                    body.x += (originalWidth - body.width);
+                const overlap = margin - body.x;
+                const targetWidth = body.width - (overlap * deformRatio);
+
+                if (targetWidth < body.minWidth) {
+                    const overflow = body.minWidth - targetWidth;
+                    body.width = body.minWidth;
+                    body.applyForce((overlap * moveRatio + overflow), 0);
                 } else {
-                    body.applyForce((margin - body.x) * 2, 0);
-                    body.x = margin;
+                    body.width = targetWidth;
+                    body.applyForce((overlap * moveRatio), 0);
                 }
             }
 
-            // Pared superior
+            // --- Pared Superior ---
             if (body.y < margin) {
-                const overflowTop = margin - body.y;
-                if (body.height > body.minHeight) {
-                    const originalHeight = body.height;
-                    body.height = Math.max(body.minHeight, body.height - overflowTop);
-                    body.y += (originalHeight - body.height);
+                const overlap = margin - body.y;
+                // 1. Intentamos deformar (aplastar de arriba hacia abajo)
+                const targetHeight = body.height - (overlap * deformRatio);
+
+                if (targetHeight < body.minHeight) {
+                    // Si llega al límite, el remanente empuja el objeto hacia abajo
+                    const overflow = body.minHeight - targetHeight;
+                    body.height = body.minHeight;
+                    body.applyForce(0, (overlap * moveRatio + overflow));
                 } else {
-                    body.applyForce(0, (margin - body.y) * 2);
-                    body.y = margin;
+                    body.height = targetHeight;
+                    body.applyForce(0, overlap * moveRatio);
                 }
             }
 
-            // Pared inferior — si ya está en minHeight, se deja escapar (scroll)
+            // --- Pared Inferior (Válvula de Escape) ---
             if (body.y + body.height > maxY) {
                 if (body.height <= body.minHeight) {
+                    // Traspasa al scroll
                     this.contentHeight = Math.max(this.contentHeight, body.y + body.height + margin);
                 } else {
-                    const overflowBottom = (body.y + body.height) - maxY;
-                    body.height = Math.max(body.minHeight, body.height - overflowBottom);
-                    body.applyForce(0, (maxY - (body.y + body.height)) * 2);
-                    body.y = maxY - body.height;
+                    const overlap = (body.y + body.height) - maxY;
+                    const targetHeight = body.height - (overlap * deformRatio);
+
+                    if (targetHeight < body.minHeight) {
+                        const overflow = body.minHeight - targetHeight;
+                        body.height = body.minHeight;
+                        body.applyForce(0, -(overlap * moveRatio + overflow));
+                    } else {
+                        body.height = targetHeight;
+                        body.applyForce(0, -(overlap * moveRatio));
+                    }
                 }
             }
         }

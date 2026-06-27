@@ -173,6 +173,27 @@ Cuando la hipótesis esté demostrada, el núcleo migra a Rust para rendimiento 
 *Las entradas se ordenan de la más reciente a la más antigua. El proceso es el producto (creo que eso es liberador).*
 
 ---
+## 2026-06-27 — Las paredes ahora respetan el stiffness
+
+El 2026-06-22, mientras estaba en mi clase de diseño de juegos, se me ocurrio ver los gifs de las entradas anteriores y encontré la pieza que le daba al motor un comportamiento extraño: las paredes del contenedor ignoraban la personalidad de los objetos. Un objeto rígido (stiffness 0.9) se aplastaba contra el borde, y uno blando (0.3) parecía más duro de mover (como si los valores estuvieran invertidos)
+
+El problema estaba en `applyContainerConstraints`. Las paredes forzaban la deformación siempre, sin repartir la fuerza entre deformación y movimiento como sí hace el `Solver` entre objetos. Modifiqué las cuatro paredes para que usen la misma lógica:
+- `deformRatio = 1 - stiffness` - la parte que se convierte en deformación
+- `moveRatio = stiffness` - la parte que se convierte en desplazamiento
+
+Ahora un objeto rígido defiende su forma moviéndose, uno blando cede deformándose. El comportamiento es coherente en colisiones y en contacto con los bordes (Al menos mejor que antes).
+
+Además, ajusté el magnetismo de los cuerpos a valores entre 10 y 20. Con este rango, la fuerza de repulsión basta para evitar solapamientos sin depender de constantes globales en el Engine o el Solver. El magnetismo ahora es una propiedad expresiva: un valor alto dice "no me gusta que me toquen wakala", uno bajo dice "soy tolerante al contacto".
+
+El motor respira, los objetos negocian, se deforman, se apartan y se expanden cuando el espacio vuelve. Todavía quedan cosas por  (por), pero el núcleo de la hipótesis, que un sistema de energía puede resolver el layout mejor que las reglas, está más cerca de probarse.
+
+**Pendiente:** Un detalle teórico a considerar, es que en pantallas extremadamente bajas, un cuerpo podría recibir compresión de altura desde dos paredes a la vez. No lo he visto ocurrir (creo), pero queda anotado como caso de prueba.
+
+**Observado:**
+Lo que si he notado, es que los objetos se acomodan mientras se cambia el tamaño de la pantalla dinamicamente, pero se pueden a llegar a acomodar diferente dependiendo de que tan rapido se mueva el cambio, propiedades de los objetos y el tamaño de pantalla inicial (Este ultimo es un problema, bueno, ya veremos).
+![](./src/assets/demo4.gif)
+
+---
 ## 2026-06-19 — Stiffness, mass, y aprender a leer el comportamiento del motor
 
 Pasé buena parte del día persiguiendo algo que pensé que era un bug y terminó siendo una mezcla de confusión conceptual y valores mal escalados.

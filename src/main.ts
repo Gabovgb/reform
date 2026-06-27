@@ -22,7 +22,7 @@ const renderer = new CanvasRenderer(ctx);
 const body1 = new Body('sidebar', 50, 50, 200, 300, {
     mass: 20,
     stiffness: 0.9,
-    magnetism: 0.5,
+    magnetism: 10,
     minWidth: 80,
     minHeight: 150,
 });
@@ -30,7 +30,7 @@ const body1 = new Body('sidebar', 50, 50, 200, 300, {
 const body2 = new Body('content', 200, 50, 400, 200, {
     mass: 30,
     stiffness: 0.6,
-    magnetism: 0.4,
+    magnetism: 15,
     minWidth: 150,
     minHeight: 100,
 });
@@ -38,7 +38,7 @@ const body2 = new Body('content', 200, 50, 400, 200, {
 const body3 = new Body('card', 550, 50, 180, 120, {
     mass: 10,
     stiffness: 0.3,
-    magnetism: 0.3,
+    magnetism: 20,
     minWidth: 100,
     minHeight: 60,
 });
